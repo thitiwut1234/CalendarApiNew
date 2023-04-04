@@ -24,7 +24,7 @@ async function getUser(userid, finderid, finderRole) {
     if (finderid !== userid) return;
 
   const user = await db.User.findById(userid);
-  if(!user) return;
+  if (!user) return;
   const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
   return { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy, created_at, updatedBy, updated_at, deletedBy };
 }
@@ -40,9 +40,9 @@ async function updateProfile(params, userid, updaterid, updaterRole) {
     if (updaterRole === 'admin') {
       user.email = params.email || user.email;
       user.idnumber = params.idnumber || user.idnumber;
-      user.password = (params.password && await bcrypt.hash(params.password, 10)) || user.password;
       user.role = params.role || user.role;
     }
+    user.password = (params.password && await bcrypt.hash(params.password, 10)) || user.password;
     user.firstname = params.firstname || user.firstname;
     user.lastname = params.lastname || user.lastname;
     user.birthdate = params.birthdate || user.birthdate;

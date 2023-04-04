@@ -120,7 +120,7 @@ function eventTypeSchema(req, res, next) {
 
 function eventActivitySchema(req, res, next) {
   const schema = Joi.object({
-    eventtarget: Joi.objectId(),
+    eventtarget: Joi.objectId().required(),
     name: Joi.string(),
     image: Joi.objectId().optional().allow(null),
     detail: Joi.string(),

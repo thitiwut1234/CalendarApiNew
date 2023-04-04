@@ -19,13 +19,14 @@ const imageRoutes = require('./routes/imageRoutes');
 const utilityRoutes = require('./routes/utilityRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const reportRoutes = require('./routes/reportRoutes');
 
 // defining the Express app
 const app = express();
 
 // defining an array to work as the database (temporary solution)
 const ads = [
-  { title: 'Calendar API Service' }
+  {title: 'Calendar API Service'}
 ];
 
 // defining multer properties
@@ -47,21 +48,18 @@ const multerMid = multer({
 
 // adding Helmet to enhance your API's security
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-// app.use(helmet({
-//   crossOriginResourcePolicy: false,
-// }));
 
 // using bodyParser to parse JSON bodies into JS objects
 // app.use(bodyParser.json());
-app.use(urlencoded({ extended: false, limit: '250kb' }));
-app.use('/', json({ limit: '250kb' }));
+app.use(urlencoded({extended: false, limit: '250kb'}));
+app.use('/', json({limit: '250kb'}));
 app.use(bodyParserErrorHandler());
 
 // setting multer to store file
 app.use(multerMid.single('file'));
 
 // enabling CORS for all requests
-app.use(cors("https://frontend-seven-rust.vercel.app" , "http://localhost:3000"));
+app.use(cors());
 
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
@@ -78,6 +76,7 @@ app.use('/storage', express.static('public/uploads'));
 app.use('/api/utility', utilityRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/event', eventRoutes);
+app.use('/api/report', reportRoutes);
 
 // starting the server
 app.listen(PORT, () => {
