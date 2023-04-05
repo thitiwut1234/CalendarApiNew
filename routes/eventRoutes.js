@@ -84,6 +84,7 @@ function eventTargetSchema(req, res, next) {
     actualdate: Joi.number(),
     actualamount: Joi.number(),
     actualincome: Joi.number(),
+    receivedbudget: Joi.number()
   });
   validateRequest(req, next, schema);
 }

@@ -271,6 +271,7 @@ async function updateEventTarget(params, id, editorid) {
   var eventTarget = await db.EventTarget.findById(id);
   if (!eventTarget) return { status: 1, message: 'เกิดข้อผิดพลาด ไม่พบข้อมูล' };
 
+  eventTarget.receivedbudget = params.receivedbudget || eventTarget.receivedbudget;
   eventTarget.expectdate = params.expectdate || eventTarget.expectdate;
   eventTarget.expectamount = params.expectamount || eventTarget.expectamount;
   eventTarget.expectincome = params.expectincome || eventTarget.expectincome;

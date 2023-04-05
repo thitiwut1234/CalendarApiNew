@@ -22,9 +22,9 @@ async function getReport(query) {
       var aa = y.actualamount;
       var ai = y.actualincome;
       var ad = y.actualdate;
-      
+
       sumactualamount += aa
-      if (ai && aa) 
+      if (ai && aa)
         netprofit += (aa * ai);
       if (ad) {
         avgAD += ad;
@@ -49,7 +49,8 @@ async function getReport(query) {
       maxactualdate: maxactualdate,
       averageactualdate: avgAD / count,
       sumactualamount: sumactualamount,
-      target : x.target.length
+      receivedbudget: x.receivedbudget,
+      target: x.target.length
     });
   })
 
@@ -68,28 +69,86 @@ async function getReport(query) {
   return groups;
 }
 
+// async function getReportTarget(id) {
+//   var report = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate({ path: 'eventtarget', populate: { path: 'user' } });
+//   console.log("Report ---> ", report.filter(x => x.eventtarget && x.eventtarget.event == id))
+
+//   if (id)
+//     report = report.filter(x => x.eventtarget && x.eventtarget.event == id);
+//   // console.log("Report ---> ", report)
+//   var groups = [];
+//   var sumbudget = 0;
+//   var sumreceivedbudget = 0;
+
+//   report.forEach(x => {
+//     let group = groups.find(y => y.eventtarget._id == x.eventtarget._id);
+//     if(group) {
+//       group.netbudget += x.budget;
+//       group.netreceivedbudget += x.eventtarget.receivedbudget;
+//     }
+//     else {
+//       groups.push({ netreceivedbudget: x.eventtarget.receivedbudget, netbudget: x.budget, eventtarget: x.eventtarget});
+//     }
+//   })
+
+//   groups.forEach(x => {sumbudget += x.netbudget; sumreceivedbudget += x.netreceivedbudget});
+//   return { sumreceivedbudget,sumbudget, groups };
+// }
+
 async function getReportTarget(id) {
-  var report = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate({ path: 'eventtarget', populate: { path: 'user' } });
+  return new Promise(async (resolve, reject) => {
+    try {
+      let reports = await db.EventTarget.find({ event: id, deletedBy: { $exists: false } }).populate('user event');
+      sumbudget = 0
+      sumreceivedbudget = 0
+      let groups = []
+      reports.forEach(async report => {
+        let activitys = await db.EventActivity.find({ eventtarget: report._id, deletedBy: { $exists: false } })
+        report.netbudget = 0
+        activitys.forEach(activity => {
+          report.netbudget += activity.budget
+          sumbudget += activity.budget
+        })
+        sumreceivedbudget += report.receivedbudget
+        groups.push({netbudget:report.netbudget , report : report})
+      })
+      setTimeout(() => {
+        resolve({ sumreceivedbudget, sumbudget, groups })
+      }, [1000])
 
-  if (id)
-    report = report.filter(x => x.eventtarget && x.eventtarget.event == id);
-
-  var groups = [];
-  var sumbudget = 0;
-
-  report.forEach(x => {
-    let group = groups.find(y => y.eventtarget._id == x.eventtarget._id);
-    if(group) {
-      group.netbudget += x.budget;
     }
-    else {
-      groups.push({ netbudget: x.budget, eventtarget: x.eventtarget});
+    catch (err) {
+      reject(ErrorNotFound('Data not found'))
     }
+
   })
 
-  groups.forEach(x => sumbudget += x.netbudget);
-  return { sumbudget, groups };
+
+
+
+  // if (id)
+  //   report = report.filter(x => x.eventtarget && x.eventtarget.event == id);
+  // console.log("Report ---> ", report)
+  // var groups = [];
+  // var sumbudget = 0;
+  // var sumreceivedbudget = 0;
+
+  // report.forEach(x => {
+  //   let group = groups.find(y => y.eventtarget._id == x.eventtarget._id);
+  //   if(group) {
+  //     group.netbudget += x.budget;
+  //     group.netreceivedbudget += x.eventtarget.receivedbudget;
+  //   }
+  //   else {
+  //     groups.push({ netreceivedbudget: x.eventtarget.receivedbudget, netbudget: x.budget, eventtarget: x.eventtarget});
+  //   }
+  // })
+
+  // groups.forEach(x => {sumbudget += x.netbudget; sumreceivedbudget += x.netreceivedbudget});
+
+
 }
+
 
 module.exports = {
   getReport,

@@ -12,8 +12,9 @@ async function getReport(req, res) {
 
 async function getReportTarget(req, res) {
   try {
-    const response = await reportService.getReportTarget(req.params.id);
-    res.json(response);
+    const response = await reportService.getReportTarget(req.params.id)
+      .then(response => { console.log(response), res.json(response) });
+    ;
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
