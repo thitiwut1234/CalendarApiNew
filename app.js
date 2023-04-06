@@ -51,8 +51,8 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 // using bodyParser to parse JSON bodies into JS objects
 // app.use(bodyParser.json());
-app.use(urlencoded({extended: false, limit: '250kb'}));
-app.use('/', json({limit: '250kb'}));
+app.use(urlencoded({extended: false, limit: '50mb'}));
+app.use('/', json({limit: '50mb'}));
 app.use(bodyParserErrorHandler());
 
 // setting multer to store file
