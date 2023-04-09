@@ -54,6 +54,22 @@ async function createUser(req, res) {
   }
 }
 
+// async function createAdmin(req, res) {
+//   try {
+//     // console.log(req.user);
+//     // res.status(409).json({ message: 'พบข้อผิดพลาด' });
+//     let response = await authService.createAdmin(req.body, req.auth);
+//     if(response.status == 0) res.status(201).json({ message: response.message });
+//     else if(response.status == 1) res.status(409).json({ message: response.message });
+//     else if(response.status == 2) res.status(403).json({ message: response.message });
+//     else if(response.status == 3) res.status(400).json({ message: response.message });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'พบข้อผิดพลาด' });
+//   }
+// }
+
+
 // async function forgotPassword(req, res) {
 //   try {
 //     const { email } = req.body;
@@ -80,7 +96,8 @@ module.exports = {
     loginByIdNumber,
     loginByEmail,
     loginByEmailAdmin,
-    createUser
+    createUser,
+    // createAdmin
     // forgotPassword,
     // resetPassword,
 };

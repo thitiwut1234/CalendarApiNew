@@ -13,6 +13,8 @@ router.post('/login/email', loginEmailSchema, authController.loginByEmail);
 router.post('/login/admin', loginEmailSchema, authController.loginByEmailAdmin);
 
 router.post('/create/user', authorizer(['researcher', 'admin']), createUserSchema, authController.createUser);
+// router.post('/create/admin', createUserSchema, authController.createAdmin);
+
 // router.post('/forgot-password', authController.forgotPassword);
 // router.post('/reset-password', authController.resetPassword);
 

@@ -96,46 +96,46 @@ async function createUser(params, creator) {
   }
 }
 
-// async function forgotPassword(email) {
-//   const user = await User.findOne({ email });
-//   if (!user) throw new Error('User not found');
 
-//   const token = randomstring.generate(20);
-//   user.resetPasswordToken = token;
-//   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-//   await user.save();
+// async function createAdmin(params, creator) {
 
-//   const message = {
-//     to: user.email,
-//     subject: 'Password Reset',
-//     text: `Please click on the following link, or paste it into your browser to reset your password: ${process.env.APP_BASE_URL}/reset-password/${token}`,
-//   };
+//   const role = 'admin'
 
-//   // Send email with the password reset link
-//   // Example using SendGrid API:
-//   // await sendgrid.send(message);
+//   const email = params.email || null;
+//   const idnumber = params.idnumber || null;
+//   const password = await bcrypt.hash(params.password, 10);
+//   const firstname = params.firstname;
+//   const lastname = params.lastname;
+//   const birthdate = params.birthdate;
+//   const address = params.address || "";
+//   const province = params.province || 75;
+//   const district = params.district;
+//   const subdistrict = params.subdistrict;
+//   const zipcode = params.zipcode;
 
-//   return { message: 'Password reset link sent to your email' };
-// }
-
-// async function resetPassword(token, password) {
-//   const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
-//   if (!user) throw new Error('Invalid token');
-
-//   const hashedPassword = await bcrypt.hash(password, 10);
-//   user.password = hashedPassword;
-//   user.resetPasswordToken = undefined;
-//   user.resetPasswordExpires = undefined;
-//   await user.save();
-
-//   return { message: 'Password reset successful' };
+//   console.log("admin")
+//   if (role == 'admin' || role == 'researcher') {
+//     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
+//     const user = await db.User.findOne({ email });
+//     if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
+//     const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: null});
+//     await newUser.save();
+//     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
+//   }
+//   else {
+//     if (!idnumber) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
+//     const user = await db.User.findOne({ idnumber });
+//     if (user) return { status: 1, message: 'หมายเลขบัตรประจำตัวประชาชนถูกใช้แล้ว' };
+//     const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id });
+//     await newUser.save();
+//     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
+//   }
 // }
 
 module.exports = {
   loginByIdNumber,
   loginByEmail,
   loginByEmailAdmin,
-  createUser
-  //   forgotPassword,
-  //   resetPassword,
+  createUser,
+  // createAdmin
 };
