@@ -9,6 +9,7 @@ const router = express.Router();
 module.exports = router;
 
 router.get('/:id', contentController.getContent);
+router.post('/news', contentgetNews, contentController.getNews);
 router.post('/create', authorizer(['admin']), contentSchema, contentController.createContent);
 router.put('/edit/:id', authorizer(['admin']), contentSchema, contentController.editContent);
 router.delete('/delete/:id', authorizer(['admin']), contentController.deleteContent);
@@ -28,6 +29,14 @@ function contentSchema(req, res, next) {
 function contentgetType(req, res, next) {
   const schema = Joi.object({
     type: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
+}
+
+function contentgetNews(req, res, next) {
+  const schema = Joi.object({
+    page: Joi.number(),
+    limit: Joi.number()
   });
   validateRequest(req, next, schema);
 }

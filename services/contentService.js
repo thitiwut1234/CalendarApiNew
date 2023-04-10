@@ -1,18 +1,27 @@
 const db = require('../utils/db');
 
 async function getContent(id, page, limit) {
-  if(id == 'all') {
-    const contentObj = await db.Content.find({deletedBy: { $exists: false }}).populate('image').sort({ date: -1 }).limit(parseInt(limit)).skip( limit * page );
+  if (id == 'all') {
+    const contentObj = await db.Content.find({ deletedBy: { $exists: false } }).populate('image').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
     return contentObj;
   }
   else {
-    const contentObj = await db.Content.findOne({ _id: id, deletedBy: { $exists: false }}).populate('image');
+    const contentObj = await db.Content.findOne({ _id: id, deletedBy: { $exists: false } }).populate('image');
     return contentObj;
   }
 }
 
+async function getNews(page, limit) {
+  const contentObj = await db.Content.find({ type: "news" , deletedBy: { $exists: false } }).populate('image').sort({ created_at: 'desc' }).limit(parseInt(limit)).skip(limit * page);
+  const total = (await db.Content.find({ type: "news" , deletedBy: { $exists: false } })).length
+  const allpage = Math.ceil(total/limit)
+  const content = {contentObj , total , allpage } 
+  return content;
+
+}
+
 async function getType(typeInput) {
-  const contents = await db.Content.find({ type: typeInput , deletedBy: { $exists: false }}).lean().populate('image' , 'filename');
+  const contents = await db.Content.find({ type: typeInput, deletedBy: { $exists: false } }).lean().populate('image', 'filename');
 
   // contents.forEach(async (content, index) => {
   //   const image = await db.Image.find({ _id: content.image })
@@ -61,5 +70,6 @@ module.exports = {
   getType,
   createContent,
   editContent,
+  getNews,
   deleteContent
 };
