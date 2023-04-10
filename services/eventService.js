@@ -2,8 +2,15 @@ const db = require('../utils/db');
 
 async function getEventType(id, page, limit) {
   if (id == 'all') {
-    const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
-    return eventObj;
+    // const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+    const eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type')
+    let obj = []
+    for (let i = 0; i < eventObj.length; i++) {
+      if (!(obj.find(x => x._id == eventObj[i].type._id))) {
+        obj.push(eventObj[i].type)
+      }
+    }
+    return obj;
   }
   else {
     const eventObj = await db.EventType.findOne({ _id: id, deletedBy: { $exists: false } });
