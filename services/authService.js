@@ -103,45 +103,45 @@ async function createUser(params, creator) {
 }
 
 
-// async function createAdmin(params, creator) {
+async function createAdmin(params, creator) {
 
-//   const role = 'admin'
+  const role = 'admin'
 
-//   const email = params.email || null;
-//   const idnumber = params.idnumber || null;
-//   const password = await bcrypt.hash(params.password, 10);
-//   const firstname = params.firstname;
-//   const lastname = params.lastname;
-//   const birthdate = params.birthdate;
-//   const address = params.address || "";
-//   const province = params.province || 75;
-//   const district = params.district;
-//   const subdistrict = params.subdistrict;
-//   const zipcode = params.zipcode;
+  const email = params.email || null;
+  const idnumber = params.idnumber || null;
+  const password = await bcrypt.hash(params.password, 10);
+  const firstname = params.firstname;
+  const lastname = params.lastname;
+  const birthdate = params.birthdate;
+  const address = params.address || "";
+  const province = params.province || 75;
+  const district = params.district;
+  const subdistrict = params.subdistrict;
+  const zipcode = params.zipcode;
 
-//   console.log("admin")
-//   if (role == 'admin' || role == 'researcher') {
-//     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
-//     const user = await db.User.findOne({ email });
-//     if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
-//     const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: null});
-//     await newUser.save();
-//     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
-//   }
-//   else {
-//     if (!idnumber) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
-//     const user = await db.User.findOne({ idnumber });
-//     if (user) return { status: 1, message: 'หมายเลขบัตรประจำตัวประชาชนถูกใช้แล้ว' };
-//     const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id });
-//     await newUser.save();
-//     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
-//   }
-// }
+  console.log("admin")
+  if (role == 'admin' || role == 'researcher') {
+    if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
+    const user = await db.User.findOne({ email });
+    if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
+    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: null});
+    await newUser.save();
+    return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
+  }
+  else {
+    if (!idnumber) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
+    const user = await db.User.findOne({ idnumber });
+    if (user) return { status: 1, message: 'หมายเลขบัตรประจำตัวประชาชนถูกใช้แล้ว' };
+    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id });
+    await newUser.save();
+    return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
+  }
+}
 
 module.exports = {
   loginByIdNumber,
   loginByEmail,
   loginByEmailAdmin,
   createUser,
-  // createAdmin
+  createAdmin
 };
