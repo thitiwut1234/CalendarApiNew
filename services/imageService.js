@@ -8,7 +8,7 @@ async function upload(file, type, userid) {
   return image;
 }
 
-async function getImage(url, imageId, type, page, limit) {
+async function getImage(url, imageId, type, page = 0, limit = 8000) {
   if(imageId == 'all') {
     var imageObj = await db.Image.find({ type }).sort({ date: -1 }).limit(parseInt(limit)).skip( limit * page );
     imageObj.forEach((x) => { x.imageUrl = url + x.filename });

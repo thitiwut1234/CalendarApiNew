@@ -1,6 +1,6 @@
 const db = require('../utils/db');
 
-async function getEventType(id, page, limit) {
+async function getEventType(id, page=0, limit = 8000) {
   if (id == 'all') {
     // const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
     const eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type')
@@ -221,7 +221,7 @@ async function deleteEvent(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
-async function getEventTarget(id, page, limit) {
+async function getEventTarget(id, page=0, limit = 8000) {
   if (id == 'all') {
     const eventObj = await db.EventTarget.find({ deletedBy: { $exists: false } }).populate('user').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
     return eventObj;
@@ -237,7 +237,7 @@ async function getTargetIdById(userId, eventId) {
   return eventObj;
 }
 
-async function getTargetById(id, page, limit) {
+async function getTargetById(id, page=0, limit = 8000) {
   const eventObj = await db.EventTarget.find({ event: id, deletedBy: { $exists: false } }).populate('user event');
   return eventObj;
 }
@@ -250,7 +250,7 @@ async function getTargetById(id, page, limit) {
 //   return eventObj
 // }
 
-async function getEventByUserId(id, page, limit, name, type) {
+async function getEventByUserId(id, page=0, limit, name, type) {
   let eventObj = await db.EventTarget.find({ user: id, deletedBy: { $exists: false } }).populate('user event').populate({ path: 'event', populate: { path: 'type' } })
   eventObj = eventObj.filter(event => !event.event.deletedBy)
   if (name) {
@@ -262,7 +262,7 @@ async function getEventByUserId(id, page, limit, name, type) {
   return eventObj;
 }
 
-async function getEventByResearcher(firstname, lastname, page, limit, name, type , id) {
+async function getEventByResearcher(firstname, lastname, page=0, limit, name, type , id) {
   let eventObj = await db.EventResearcher.find({ $or: [ { firstname: firstname, lastname: lastname, deletedBy: { $exists: false } }, { createdBy: id, deletedBy: { $exists: false } } ] }).populate('event').populate({ path: 'event', populate: { path: 'type' } }).find({});
   eventObj.filter(event => !event.event.deletedBy)
   if (name) {
@@ -300,7 +300,7 @@ async function deleteEventTarget(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
-async function getEventActivity(id, page, limit) {
+async function getEventActivity(id, page=0, limit = 8000) {
   if (id == 'all') {
     const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
     return eventObj;
@@ -311,7 +311,7 @@ async function getEventActivity(id, page, limit) {
   }
 }
 
-async function getEventActivityByEventTargetId(id, page, limit) {
+async function getEventActivityByEventTargetId(id, page=0, limit = 8000) {
   const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
   return eventObj;
 }

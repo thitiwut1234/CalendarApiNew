@@ -1,6 +1,6 @@
 const db = require('../utils/db');
 
-async function getContent(id, page, limit) {
+async function getContent(id, page = 0, limit = 8000) {
   if (id == 'all') {
     const contentObj = await db.Content.find({ deletedBy: { $exists: false } }).populate('image').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
     return contentObj;
@@ -11,7 +11,7 @@ async function getContent(id, page, limit) {
   }
 }
 
-async function getNews(page, limit) {
+async function getNews(page = 0, limit = 8000) {
   const contentObj = await db.Content.find({ type: "news" , deletedBy: { $exists: false } }).populate('image').sort({ created_at: 'desc' }).limit(parseInt(limit)).skip(limit * page);
   const total = (await db.Content.find({ type: "news" , deletedBy: { $exists: false } })).length
   const allpage = Math.ceil(total/limit)
