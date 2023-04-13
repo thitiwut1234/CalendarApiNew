@@ -55,11 +55,11 @@ async function getEvent(id, page, limit, type, district, name, eventTypeId) {
       const eventObj = await db.Event.find({ type, district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
       return eventObj;
     }
-    if (type) {
+    else if (type) {
       const eventObj = await db.Event.find({ type, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
       return eventObj;
     }
-    if (district) {
+    else if (district) {
       const eventObj = await db.Event.find({ district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
       return eventObj;
     }
