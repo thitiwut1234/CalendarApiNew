@@ -49,7 +49,7 @@ async function deleteEventType(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
-async function getEvent(id, page, limit, type, district, name, eventTypeId) {
+async function getEvent(id, page = 0, limit = 8000, type, district, name, eventTypeId) {
   if (id == 'all') {
     if (type && district) {
       const eventObj = await db.Event.find({ type, district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
