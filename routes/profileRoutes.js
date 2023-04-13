@@ -29,6 +29,12 @@ function updateProfileSchema(req, res, next) {
     subdistrict: Joi.number(),
     zipcode: Joi.number(),
     role: Joi.string(),
+    position: Joi.string().optional().allow(''),
+    affiliation: Joi.string().optional().allow(''),
+    agency: Joi.string().optional().allow(''),
+    tel: Joi.string().optional().allow(''),
+    lat: Joi.string().optional().allow(''),
+    long: Joi.string().optional().allow(''),
   });
   validateRequest(req, next, schema);
 }

@@ -77,12 +77,18 @@ async function createUser(params, creator) {
   const district = params.district;
   const subdistrict = params.subdistrict;
   const zipcode = params.zipcode;
+  const position = params.position;
+  const affiliation = params.affiliation;
+  const agency = params.agency;
+  const tel = params.tel;
+  const lat = params.lat;
+  const long = params.long;
 
   if (role == 'admin' || role == 'researcher') {
     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
     const user = await db.User.findOne({ email });
     if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
-    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id });
+    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, position, affiliation, agency, tel });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }
@@ -90,7 +96,7 @@ async function createUser(params, creator) {
     if (!idnumber) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
     const user = await db.User.findOne({ idnumber });
     if (user) return { status: 1, message: 'หมายเลขบัตรประจำตัวประชาชนถูกใช้แล้ว' };
-    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id });
+    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id , tel , lat , long });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }

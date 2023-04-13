@@ -262,8 +262,8 @@ async function getEventByUserId(id, page, limit, name, type) {
   return eventObj;
 }
 
-async function getEventByResearcher(firstname, lastname, page, limit, name, type) {
-  let eventObj = await db.EventResearcher.find({ firstname: firstname, lastname: lastname, deletedBy: { $exists: false } }).populate('event').populate({ path: 'event', populate: { path: 'type' } }).find({});
+async function getEventByResearcher(firstname, lastname, page, limit, name, type , id) {
+  let eventObj = await db.EventResearcher.find({ $or: [ { firstname: firstname, lastname: lastname, deletedBy: { $exists: false } }, { createdBy: id, deletedBy: { $exists: false } } ] }).populate('event').populate({ path: 'event', populate: { path: 'type' } }).find({});
   eventObj.filter(event => !event.event.deletedBy)
   if (name) {
     eventObj = eventObj.filter(event => event.event.name.includes(name))
@@ -285,6 +285,8 @@ async function updateEventTarget(params, id, editorid) {
   eventTarget.actualdate = params.actualdate || eventTarget.actualdate;
   eventTarget.actualamount = params.actualamount || eventTarget.actualamount;
   eventTarget.actualincome = params.actualincome || eventTarget.actualincome;
+  eventTarget.lat = params.lat || eventTarget.lat;
+  eventTarget.long = params.long || eventTarget.long;
   eventTarget.updatedBy = editorid;
 
   await eventTarget.save();
@@ -300,23 +302,23 @@ async function deleteEventTarget(id, deleterid) {
 
 async function getEventActivity(id, page, limit) {
   if (id == 'all') {
-    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
     return eventObj;
   }
   else {
-    const eventObj = await db.EventActivity.findOne({ _id: id, deletedBy: { $exists: false } }).populate('eventtarget image');
+    const eventObj = await db.EventActivity.findOne({ _id: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5');
     return eventObj;
   }
 }
 
 async function getEventActivityByEventTargetId(id, page, limit) {
-  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
   return eventObj;
 }
 
 async function createEventActivity(params, creatorid) {
-  const { eventtarget, image, event, detail, budget, startdate, enddate, note } = params;
-  var activity = new db.EventActivity({ eventtarget, image, event, detail, budget, startdate, enddate, note });
+  const { eventtarget, image , image2 , image3 , image4 , image5 , event, detail, budget, startdate, enddate, note } = params;
+  var activity = new db.EventActivity({ eventtarget, image , image2 , image3 , image4 , image5, event, detail, budget, startdate, enddate, note });
   activity.createdBy = creatorid;
   await activity.save();
   return activity;
@@ -327,6 +329,10 @@ async function updateEventActivity(params, editorid) {
   if (!activityObj) return { status: 1, message: 'เกิดข้อผิดพลาด ไม่พบข้อมูล' };
 
   activityObj.image = params.image || activityObj.image;
+  activityObj.image2 = params.image2 || activityObj.image2;
+  activityObj.image3 = params.image3 || activityObj.image3;
+  activityObj.image4 = params.image4 || activityObj.image4;
+  activityObj.image5 = params.image5 || activityObj.image5;
   activityObj.detail = params.detail || activityObj.detail;
   activityObj.budget = params.budget || activityObj.budget;
   activityObj.startdate = params.startdate || activityObj.startdate;

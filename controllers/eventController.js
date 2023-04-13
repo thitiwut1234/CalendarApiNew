@@ -155,7 +155,7 @@ async function getEventtByTargetId(req, res) {
 
 async function getEventtByResearcher(req, res) {
   try {
-    const response = await eventService.getEventByResearcher(req.body.firstname, req.body.lastname, req.query.page, req.query.limit , req.body.name , req.body.eventTypeId);
+    const response = await eventService.getEventByResearcher(req.body.firstname, req.body.lastname, req.query.page, req.query.limit , req.body.name , req.body.eventTypeId , req.body.id);
     res.json(response);
   } catch (error) {
     console.error(error);

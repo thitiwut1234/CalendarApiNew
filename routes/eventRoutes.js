@@ -15,7 +15,7 @@ router.delete('/type/delete/:id', authorizer(['admin']), eventController.deleteE
 
 //router.get('/annony', eventController.getEventAnnony);
 router.get('/:id', eventController.getEvent);
-router.post('/all/:id',eventSearchSchema, eventController.getEvent);
+router.post('/all/:id', eventSearchSchema, eventController.getEvent);
 router.post('/calendar', authorizer(['researcher', 'admin']), eventCalendarSchema, eventController.getEventCalendar);
 // router.post('/search', authorizer(), eventSearchSchema, eventController.getEventSearch);
 router.post('/create', authorizer(['researcher', 'admin']), eventSchema, eventController.createEvent);
@@ -78,6 +78,8 @@ function eventSearchSchema(req, res, next) {
 
 function eventTargetSchema(req, res, next) {
   const schema = Joi.object({
+    lat: Joi.string(),
+    long: Joi.string(),
     expectdate: Joi.number(),
     expectamount: Joi.number(),
     expectincome: Joi.number(),
@@ -99,6 +101,7 @@ function eventTargetIdSchema(req, res, next) {
 
 function eventResearcherSchema(req, res, next) {
   const schema = Joi.object({
+    id: Joi.objectId().optional().allow(0),
     firstname: Joi.string(),
     lastname: Joi.string(),
     name: Joi.string().optional().allow(''),
@@ -124,6 +127,10 @@ function eventActivitySchema(req, res, next) {
     eventtarget: Joi.objectId().required(),
     name: Joi.string(),
     image: Joi.objectId().optional().allow(null),
+    image2: Joi.objectId().optional().allow(null),
+    image3: Joi.objectId().optional().allow(null),
+    image4: Joi.objectId().optional().allow(null),
+    image5: Joi.objectId().optional().allow(null),
     detail: Joi.string(),
     budget: Joi.number(),
     startdate: Joi.date(),

@@ -22,7 +22,6 @@ async function getAllResearcher(req, res) {
   }
 }
 
-
 async function getUser(req, res) {
   try {
     const { userid } = req.params;

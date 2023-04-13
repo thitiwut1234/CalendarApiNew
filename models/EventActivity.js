@@ -7,6 +7,10 @@ const schemaOptions = {
 const eventActivitySchema = new mongoose.Schema({
   eventtarget: { type: mongoose.Schema.Types.ObjectId, ref: 'EventTarget' },
   image: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+  image2: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+  image3: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+  image4: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
+  image5: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
   detail: { type: String },
   budget: { type: Number },
   startdate: { type: Date },

@@ -6,6 +6,8 @@ const schemaOptions = {
 
 const eventTargetSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  lat: { type: String, default: '0'},
+  long: { type: String, default: '0'},
   receivedbudget: { type: Number, default: 0},
   expectdate: { type: Number, default: null },
   expectamount: { type: Number, default: null },

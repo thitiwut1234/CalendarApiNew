@@ -16,13 +16,14 @@ async function getReport(query) {
     var count = 0;
     var maxactualdate = 0;
     var sumactualamount = 0;
+    var sumreceivedbudget = 0
     var countTarget = 0;
     x.target.forEach((y) => {
       count++;
       var aa = y.actualamount;
       var ai = y.actualincome;
       var ad = y.actualdate;
-
+      sumreceivedbudget += y.receivedbudget
       sumactualamount += aa
       if (ai && aa)
         netprofit += (aa * ai);
@@ -50,6 +51,7 @@ async function getReport(query) {
       averageactualdate: avgAD / count,
       sumactualamount: sumactualamount,
       receivedbudget: x.receivedbudget,
+      sumreceivedbudget: sumreceivedbudget,
       target: x.target.length
     });
   })
@@ -60,10 +62,11 @@ async function getReport(query) {
     let group = groups.find(x => x.type == item.type);
     if (group) {
       group.event.push(item);
+      group.event.sumreceivedbudget += item.receivedbudget
       group.event.sumnetprofit += item.netprofit;
     }
     else {
-      groups.push({ type: item.type, sumnetprofit: item.netprofit, event: [item] });
+      groups.push({ type: item.type  , sumnetprofit: item.netprofit, event: [item] });
     }
   }, {});
   return groups;
