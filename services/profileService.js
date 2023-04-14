@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 async function getAllRoleUsers(finderid, finderRole) {
   if (finderRole !== 'user') {
     const user = await db.User.find({ role: "user", deletedBy: { $exists: false } }).populate('deletedBy');
-    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
     return user;
   }
   return;
@@ -13,7 +13,7 @@ async function getAllRoleUsers(finderid, finderRole) {
 async function getAllRoleResearcher(finderid, finderRole) {
   if (finderRole === 'admin') {
     const user = await db.User.find({ role: "researcher", deletedBy: { $exists: false } }).populate('deletedBy');
-    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
     return user;
   }
   return;
@@ -25,8 +25,8 @@ async function getUser(userid, finderid, finderRole) {
 
   const user = await db.User.findById(userid);
   if (!user) return;
-  const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, position, affiliation, agency, tel, lat, long, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
-  return { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, position, affiliation, agency, tel, lat, long, createdBy, created_at, updatedBy, updated_at, deletedBy };
+  const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, position, affiliation, agency, tel, lat, long, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+  return { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, position, affiliation, agency, tel, lat, long, createdBy, created_at, updatedBy, updated_at, deletedBy };
 }
 
 async function updateProfile(params, userid, updaterid, updaterRole) {
@@ -52,6 +52,7 @@ async function updateProfile(params, userid, updaterid, updaterRole) {
     user.subdistrict = params.subdistrict || user.subdistrict;
     user.zipcode = params.zipcode || user.zipcode;
     user.updatedBy = updaterid;
+    user.rank = params.rank || user.rank;
     user.position = params.position || user.position
     user.affiliation = params.affiliation || user.affiliation
     user.agency = params.agency || user.agency

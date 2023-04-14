@@ -83,12 +83,13 @@ async function createUser(params, creator) {
   const tel = params.tel;
   const lat = params.lat;
   const long = params.long;
+  const rank = params.rank;
 
   if (role == 'admin' || role == 'researcher') {
     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
     const user = await db.User.findOne({ email });
     if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
-    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, position, affiliation, agency, tel });
+    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, position, affiliation, agency, tel , rank });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }

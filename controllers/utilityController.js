@@ -40,9 +40,20 @@ async function getZipCode(req, res) {
   }
 }
 
+async function getRankName(req, res) {
+  try {
+    const response = await utilityService.getRankName();
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
 module.exports = {
   getProvince,
   getDistrict,
   getSubDistrict,
-  getZipCode
+  getZipCode,
+  getRankName
 }

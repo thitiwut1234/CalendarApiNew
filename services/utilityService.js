@@ -17,9 +17,14 @@ async function getZipCode(id) {
   return utility.getZipCode(id);
 }
 
+async function getRankName() {
+  return utility.getRankName();
+}
+
 module.exports = {
   getProvince,
   getDistrict,
   getSubDistrict,
-  getZipCode
+  getZipCode,
+  getRankName
 }

@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
   tel: { type: String, default: '' },
   lat: { type: String, default: '' },
   long: { type: String, default: '' },
+  rank: { type: Number, required: true },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }

@@ -10,3 +10,5 @@ router.get('/province', utilityController.getProvince);
 router.get('/district/:id', utilityController.getDistrict);
 router.get('/subdistrict/:id', utilityController.getSubDistrict);
 router.get('/zipcode/:id', utilityController.getZipCode);
+
+router.get('/rank', utilityController.getRankName);

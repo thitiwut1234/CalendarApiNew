@@ -38,6 +38,7 @@ function createUserSchema(req, res, next) {
     lat: Joi.string().optional().allow(''),
     long: Joi.string().optional().allow(''),
     role: Joi.string(),
+    rank: Joi.number().required()
   }).or('email', 'idnumber');
   validateRequest(req, next, schema);
 }

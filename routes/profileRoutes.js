@@ -35,6 +35,7 @@ function updateProfileSchema(req, res, next) {
     tel: Joi.string().optional().allow(''),
     lat: Joi.string().optional().allow(''),
     long: Joi.string().optional().allow(''),
+    rank: Joi.number().required()
   });
   validateRequest(req, next, schema);
 }

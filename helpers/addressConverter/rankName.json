@@ -1,0 +1,34 @@
+[
+  {
+    "RANK_ID": 1,
+    "RANK_NAME": "นาย"
+  },
+  {
+    "RANK_ID": 2,
+    "RANK_NAME": "นาง"
+  },
+  {
+    "RANK_ID": 3,
+    "RANK_NAME": "นางสาว"
+  },
+  {
+    "RANK_ID": 4,
+    "RANK_NAME": "เด็กชาย"
+  },
+  {
+    "RANK_ID": 5,
+    "RANK_NAME": "เด็กหญิง"
+  },
+  {
+    "RANK_ID": 6,
+    "RANK_NAME": "ศ."
+  },
+  {
+    "RANK_ID": 7,
+    "RANK_NAME": "ผศ."
+  },
+  {
+    "RANK_ID": 8,
+    "RANK_NAME": "รศ."
+  }
+]
