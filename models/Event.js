@@ -12,6 +12,7 @@ const eventSchema = new mongoose.Schema({
   district: { type: Number },
   subdistrict: { type: Number },
   zipcode: { type: Number },
+  budget: { type: Number, default: null },
   startdate: { type: Date, required: true },
   enddate: { type: Date, default: function() {
     var resDate = new Date(this.startdate);

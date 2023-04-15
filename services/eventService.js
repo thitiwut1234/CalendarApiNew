@@ -101,7 +101,7 @@ async function getEventCalendarCheck(type, province, district) {
 // }
 
 async function createEvent(params, creatorid) {
-  const { name, type, quantity, province, district, subdistrict, zipcode, researcher, target, startdate, expectdate, expectquantity } = params;
+  const { name, type, quantity, province, district, subdistrict, zipcode, researcher, target, startdate, expectdate, expectquantity , budget } = params;
   var typeObj = await db.EventType.findOne({ name: type });
   if (!typeObj) {
     typeObj = new db.EventType({ name: type });
@@ -109,7 +109,7 @@ async function createEvent(params, creatorid) {
     await typeObj.save();
   }
 
-  var newEvent = new db.Event({ name, type: typeObj._id, quantity, province, district, subdistrict, zipcode, startdate, expectdate, expectquantity });
+  var newEvent = new db.Event({ name, type: typeObj._id, quantity, province, district, subdistrict, zipcode, startdate, expectdate, expectquantity , budget });
 
   var researcherArrId = [];
 
@@ -163,6 +163,7 @@ async function editEvent(id, params, editorid, editorrole) {
     eventObj.subdistrict = params.subdistrict || eventObj.subdistrict,
     eventObj.zipcode = params.zipcode || eventObj.zipcode
   eventObj.startdate = params.startdate || eventObj.startdate;
+  eventObj.budget = params.budget || eventObj.budget;
   eventObj.expectdate = params.expectdate || eventObj.expectdate;
   eventObj.expectquantity = params.expectquantity || eventObj.expectquantity;
 

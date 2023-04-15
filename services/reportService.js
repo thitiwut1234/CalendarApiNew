@@ -50,8 +50,8 @@ async function getReport(query) {
       maxactualdate: maxactualdate,
       averageactualdate: avgAD / count,
       sumactualamount: sumactualamount,
-      receivedbudget: x.receivedbudget,
-      sumreceivedbudget: sumreceivedbudget,
+      receivedbudget: x.receivedbudget ,
+      sumreceivedbudget: x.budget == null ? 0 : x.budget,
       target: x.target.length
     });
   })

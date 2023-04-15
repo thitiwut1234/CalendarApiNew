@@ -47,6 +47,7 @@ function eventSchema(req, res, next) {
     zipcode: Joi.number(),
     startdate: Joi.date(),
     expectdate: Joi.number(),
+    budget: Joi.number().optional().allow(null),
     expectquantity: Joi.number(),
     researcher: Joi.array().items(Joi.object({
       firstname: Joi.string(),
