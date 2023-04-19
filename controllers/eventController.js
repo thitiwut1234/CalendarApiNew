@@ -42,7 +42,17 @@ async function deleteEventType(req, res) {
 
 async function getEvent(req, res) {
   try {
-    const response = await eventService.getEvent(req.params.id, req.query.page, req.query.limit, req.query.type, req.query.district , req.body.name , req.body.eventTypeId);
+    const response = await eventService.getEvent(req.params.id, req.query.page, req.query.limit, req.query.type, req.query.district, req.body.name, req.body.eventTypeId);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getPageEvent(req, res) {
+  try {
+    const response = await eventService.getPageEvent(req.params.id, req.query.page, req.query.limit, req.query.type, req.query.district, req.body.name, req.body.eventTypeId);
     res.json(response);
   } catch (error) {
     console.error(error);
@@ -52,7 +62,7 @@ async function getEvent(req, res) {
 
 async function getEventCalendar(req, res) {
   try {
-    console.log("Req ," , req)
+    console.log("Req ,", req)
     const response = await eventService.getEventCalendarCheck(req.body.eventTypeId, req.body.province, req.body.district);
     res.json(response);
   } catch (error) {
@@ -144,7 +154,17 @@ async function getTargetByEventId(req, res) {
 
 async function getEventtByTargetId(req, res) {
   try {
-    const response = await eventService.getEventByUserId(req.params.id, req.query.page, req.query.limit , req.body.name , req.body.eventTypeId);
+    const response = await eventService.getEventByUserId(req.params.id, req.query.page, req.query.limit, req.body.name, req.body.eventTypeId);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getEventtByNameandLastName(req, res) {
+  try {
+    const response = await eventService.getEventReseacherNameandLastName(req.body.firstname, req.body.lastname, req.query.page, req.query.limit , req.params.id);
     res.json(response);
   } catch (error) {
     console.error(error);
@@ -155,7 +175,7 @@ async function getEventtByTargetId(req, res) {
 
 async function getEventtByResearcher(req, res) {
   try {
-    const response = await eventService.getEventByResearcher(req.body.firstname, req.body.lastname, req.query.page, req.query.limit , req.body.name , req.body.eventTypeId , req.body.id);
+    const response = await eventService.getEventByResearcher(req.body.firstname, req.body.lastname, req.query.page, req.query.limit, req.body.name, req.body.eventTypeId, req.body.id);
     res.json(response);
   } catch (error) {
     console.error(error);
@@ -186,6 +206,16 @@ async function deleteEventTarget(req, res) {
 async function getEventActivity(req, res) {
   try {
     const response = await eventService.getEventActivity(req.params.id, req.query.page, req.query.limit);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getEventOtherList(req, res) {
+  try {
+    const response = await eventService.getEventOtherList(req.params.id, req.query.page, req.query.limit);
     res.json(response);
   } catch (error) {
     console.error(error);
@@ -233,6 +263,17 @@ async function deleteEventActivity(req, res) {
   }
 }
 
+async function updateEventOtherList(req, res) {
+  try {
+    const response = await eventService.updateEventOtherList(req.body, req.params.id, req.auth.id);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+
 module.exports = {
   getEventType,
   createEventType,
@@ -256,5 +297,9 @@ module.exports = {
   getEventActivityByTargetId,
   createEventActivity,
   updateEventActivity,
-  deleteEventActivity
+  deleteEventActivity,
+  getEventOtherList,
+  updateEventOtherList,
+  getPageEvent,
+  getEventtByNameandLastName
 }

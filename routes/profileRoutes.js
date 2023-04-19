@@ -10,7 +10,9 @@ const router = express.Router();
 module.exports = router;
 
 router.post('/role/user', authorizer(), profileController.getAllUser)
+router.post('/role/userTotal', authorizer(), profileController.getAllUserPage)
 router.post('/role/researcher', authorizer(['admin']), profileController.getAllResearcher)
+router.post('/role/researcherTotal', authorizer(['admin']), profileController.getAllResearcherPage)
 router.get('/:userid', authorizer(), profileController.getUser);
 router.put('/update/:userid', authorizer(), updateProfileSchema, profileController.updateProfile);
 router.delete('/delete/:userid', authorizer(['admin']), profileController.deleteUser);

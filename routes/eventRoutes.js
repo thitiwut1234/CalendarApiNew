@@ -14,8 +14,10 @@ router.put('/type/update/:id', authorizer(['admin']), eventTypeSchema, eventCont
 router.delete('/type/delete/:id', authorizer(['admin']), eventController.deleteEventType);
 
 //router.get('/annony', eventController.getEventAnnony);
-router.get('/:id', eventController.getEvent);
+router.get('/:id', eventSearchSchema, eventController.getEvent);
+
 router.post('/all/:id', eventSearchSchema, eventController.getEvent);
+router.post('/count/:id', eventSearchSchema, eventController.getPageEvent);
 router.post('/calendar', authorizer(['researcher', 'admin']), eventCalendarSchema, eventController.getEventCalendar);
 // router.post('/search', authorizer(), eventSearchSchema, eventController.getEventSearch);
 router.post('/create', authorizer(['researcher', 'admin']), eventSchema, eventController.createEvent);
@@ -25,6 +27,8 @@ router.delete('/delete/:id', authorizer(['admin']), eventController.deleteEvent)
 router.get('/target/:id', authorizer(), eventController.getEventTarget);
 router.get('/target/event/:id', authorizer(), eventController.getTargetByEventId);
 router.post('/target/user/:id', authorizer(), eventSearchSchema, eventController.getEventtByTargetId);
+router.post('/target/researchers/:id', authorizer(), eventController.getEventtByNameandLastName);
+
 router.post('/target/researcher', authorizer(), eventResearcherSchema, eventController.getEventtByResearcher);
 router.put('/target/update/:id', authorizer(), eventTargetSchema, eventController.updateEventTarget);
 router.delete('/target/delete/:id', authorizer(), eventController.deleteEventTarget);
@@ -35,6 +39,9 @@ router.post('/activity/findTargetId', authorizer(), eventTargetIdSchema, eventCo
 router.post('/activity/create', authorizer(), eventActivitySchema, eventController.createEventActivity);
 router.put('/activity/update/:id', authorizer(), eventActivitySchema, eventController.updateEventActivity);
 router.delete('/activity/delete/:id', authorizer(), eventController.deleteEventActivity);
+
+router.get('/otherList/:id', authorizer(), eventController.getEventOtherList); //other list by id 
+router.put('/otherList/:id', authorizer(), eventController.updateEventOtherList)
 
 function eventSchema(req, res, next) {
   const schema = Joi.object({
@@ -55,6 +62,12 @@ function eventSchema(req, res, next) {
     })),
     target: Joi.array().items(Joi.object({
       user: Joi.objectId().required()
+    })),
+    otherList: Joi.array().items(Joi.object({
+      list: Joi.string().optional().allow(""),
+      amount: Joi.number().optional().allow(null),
+      unit: Joi.string().optional().allow(""),
+      costPerAmount: Joi.number().optional().allow(null),
     }))
   });
   validateRequest(req, next, schema);

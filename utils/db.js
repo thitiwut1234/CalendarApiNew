@@ -14,6 +14,7 @@ module.exports = {
     Event: require('../models/Event'),
     EventActivity: require('../models/EventActivity'),
     EventTarget: require('../models/EventTarget'),
+    EventOtherList: require('../models/EventOtherList'),
     EventType: require('../models/EventType'),
     EventResearcher: require('../models/EventResearcher'),
     isValidId

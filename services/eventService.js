@@ -1,8 +1,8 @@
 const db = require('../utils/db');
 
-async function getEventType(id, page=0, limit = 8000) {
+async function getEventType(id, page = 0, limit = 8000) {
   if (id == 'all') {
-    // const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+    // const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
     const eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type')
     let obj = []
     for (let i = 0; i < eventObj.length; i++) {
@@ -49,28 +49,60 @@ async function deleteEventType(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
-async function getEvent(id, page = 0, limit = 8000, type, district, name, eventTypeId) {
+async function getPageEvent(id, page = 0, limit = 8000, type, district, name, eventTypeId) {
   if (id == 'all') {
     if (type && district) {
-      const eventObj = await db.Event.find({ type, district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
-      return eventObj;
+      const eventObj = await db.Event.find({ type, district, deletedBy: { $exists: false } }).populate('type target researcher')
+      return eventObj.length;
     }
     else if (type) {
-      const eventObj = await db.Event.find({ type, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
-      return eventObj;
+      const eventObj = await db.Event.find({ type, deletedBy: { $exists: false } }).populate('type target researcher')
+      return eventObj.length;
     }
     else if (district) {
-      const eventObj = await db.Event.find({ district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
-      return eventObj;
+      const eventObj = await db.Event.find({ district, deletedBy: { $exists: false } }).populate('type target researcher')
+      return eventObj.length;
     }
-    let eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type target researcher').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+    let eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type target researcher')
     if (name) {
       eventObj = eventObj.filter(event => event.name.includes(name))
     }
     if (eventTypeId) {
       eventObj = eventObj.filter(event => event.type._id == eventTypeId)
     }
-    return eventObj;
+    return eventObj.length;
+  }
+  else {
+    const eventObj = await db.Event.findOne({ _id: id, deletedBy: { $exists: false } }).populate('type researcher').populate({ path: 'target', populate: { path: 'user' } });
+    return eventObj.length;
+  }
+}
+
+async function getEvent(id, page = 0, limit = 8000, type, district, name, eventTypeId) {
+  if (id == 'all') {
+    if (type && district) {
+      const eventObj = await db.Event.find({ type, district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+      return eventObj;
+    }
+    else if (type) {
+      const eventObj = await db.Event.find({ type, deletedBy: { $exists: false } }).populate('type target researcher').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+      return eventObj;
+    }
+    else if (district) {
+      const eventObj = await db.Event.find({ district, deletedBy: { $exists: false } }).populate('type target researcher').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+      return eventObj;
+    }
+    if (eventTypeId !== 0) {
+      let eventObj = await db.Event.find({ name: { '$regex': name }, type: eventTypeId, deletedBy: { $exists: false } }).populate('type target researcher').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+      return eventObj;
+
+    }
+    else {
+      let eventObj = await db.Event.find({ name: { '$regex': name }, deletedBy: { $exists: false } }).populate('type target researcher').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+      return eventObj;
+
+    }
+
   }
   else {
     const eventObj = await db.Event.findOne({ _id: id, deletedBy: { $exists: false } }).populate('type researcher').populate({ path: 'target', populate: { path: 'user' } });
@@ -79,7 +111,7 @@ async function getEvent(id, page = 0, limit = 8000, type, district, name, eventT
 }
 
 async function getEventCalendarCheck(type, province, district) {
-  console.log("Check", type, province, district)
+  // console.log("Check", type, province, district)
   let eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type target researcher')
   if (province) {
     eventObj = eventObj.filter(obj => obj.province == province)
@@ -95,13 +127,13 @@ async function getEventCalendarCheck(type, province, district) {
 
 
 // async function getEventAnnony() {
-//   const eventObj = await db.Event.find().populate('type').sort({ date: -1 });
+//   const eventObj = await db.Event.find().populate('type').sort({ created_at: -1 });
 //   const mappedObj = eventObj.map(x => { return {'name': x.name, 'startdate': x.startdate, 'enddate': x.enddate, 'typename': x.type.name, 'colorEvent': x.type.colorEvent, 'color': x.type}})
 //   return mappedObj;
 // }
 
 async function createEvent(params, creatorid) {
-  const { name, type, quantity, province, district, subdistrict, zipcode, researcher, target, startdate, expectdate, expectquantity , budget } = params;
+  const { name, type, quantity, province, district, subdistrict, zipcode, researcher, target, otherList, startdate, expectdate, expectquantity, budget } = params;
   var typeObj = await db.EventType.findOne({ name: type });
   if (!typeObj) {
     typeObj = new db.EventType({ name: type });
@@ -109,7 +141,7 @@ async function createEvent(params, creatorid) {
     await typeObj.save();
   }
 
-  var newEvent = new db.Event({ name, type: typeObj._id, quantity, province, district, subdistrict, zipcode, startdate, expectdate, expectquantity , budget });
+  var newEvent = new db.Event({ name, type: typeObj._id, quantity, province, district, subdistrict, zipcode, startdate, expectdate, expectquantity, budget });
 
   var researcherArrId = [];
 
@@ -131,6 +163,13 @@ async function createEvent(params, creatorid) {
     eventTarget.createdBy = creatorid;
     eventTarget.save();
     return eventTarget._id;
+  });
+
+  const otherListArrId = otherList.map(x => {
+    var eventOtherList = new db.EventOtherList({ list: x.list, amount: x.amount, unit: x.unit, costPerAmount: x.costPerAmount, totalCost: x.amount * x.costPerAmount, createdBy: creatorid, event: newEvent._id });
+    eventOtherList.createdBy = creatorid;
+    eventOtherList.save();
+    return eventOtherList._id;
   });
 
   newEvent.researcher = researcherArrId;
@@ -222,9 +261,9 @@ async function deleteEvent(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
-async function getEventTarget(id, page=0, limit = 8000) {
+async function getEventTarget(id, page = 0, limit = 8000) {
   if (id == 'all') {
-    const eventObj = await db.EventTarget.find({ deletedBy: { $exists: false } }).populate('user').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+    const eventObj = await db.EventTarget.find({ deletedBy: { $exists: false } }).populate('user').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
     return eventObj;
   }
   else {
@@ -238,7 +277,7 @@ async function getTargetIdById(userId, eventId) {
   return eventObj;
 }
 
-async function getTargetById(id, page=0, limit = 8000) {
+async function getTargetById(id, page = 0, limit = 8000) {
   const eventObj = await db.EventTarget.find({ event: id, deletedBy: { $exists: false } }).populate('user event');
   return eventObj;
 }
@@ -251,28 +290,52 @@ async function getTargetById(id, page=0, limit = 8000) {
 //   return eventObj
 // }
 
-async function getEventByUserId(id, page=0, limit, name, type) {
-  let eventObj = await db.EventTarget.find({ user: id, deletedBy: { $exists: false } }).populate('user event').populate({ path: 'event', populate: { path: 'type' } })
-  eventObj = eventObj.filter(event => !event.event.deletedBy)
-  if (name) {
-    eventObj = eventObj.filter(event => event.event.name.includes(name))
+async function getEventByUserId(id, page = 0, limit = 8000, name, type) {
+  if (type != 0) {
+    let eventObj = await db.Event.find({ type: type, name: { '$regex': name }, deletedBy: { $exists: false } }).populate({ path: 'target', select: { user: 1 } })
+      .sort({ created_at: -1 })
+    // .limit(parseInt(limit)).skip(limit * page);
+    eventObj = eventObj.filter(x => x.target.find(uid => uid.user == id))
+    return eventObj.splice(page * limit, limit);
   }
-  if (type) {
-    eventObj = eventObj.filter(event => event.event.type._id == type)
+  else {
+    let eventObj = await db.Event.find({ name: { '$regex': name }, deletedBy: { $exists: false } }).populate({ path: 'target', select: { user: 1 } })
+      .sort({ created_at: -1 })
+    // .limit(parseInt(limit)).skip(limit * page);
+    eventObj = eventObj.filter(x => x.target.find(uid => uid.user == id))
+    return eventObj.splice(page * limit, limit);
   }
-  return eventObj;
 }
 
-async function getEventByResearcher(firstname, lastname, page=0, limit, name, type , id) {
-  let eventObj = await db.EventResearcher.find({ $or: [ { firstname: firstname, lastname: lastname, deletedBy: { $exists: false } }, { createdBy: id, deletedBy: { $exists: false } } ] }).populate('event').populate({ path: 'event', populate: { path: 'type' } }).find({});
-  eventObj.filter(event => !event.event.deletedBy)
+async function getEventReseacherNameandLastName(firstname, lastname, page = 0, limit = 8000, id) {
+  // if (type != 0) {
+  let eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate({ path: 'researcher', select: { firstname: 1, lastname: 1 } })
+    .sort({ created_at: -1 })
+  console.log("Evemt", eventObj)
+  // .limit(parseInt(limit)).skip(limit * page);
+  eventObj = eventObj.filter(x => x.researcher.find(uid => uid.firstname == firstname && uid.lastname == lastname))
+  return eventObj.splice(page * limit, limit);
+  // }
+  // else {
+  // let eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate({ path: 'researcher', select: { firstname: 1, lastname: 1 } })
+  //   .sort({ created_at: -1 })
+  // // .limit(parseInt(limit)).skip(limit * page);
+  // eventObj = eventObj.filter(x => (x.target.find(uid => uid.firstname == firstname && uid.lastname == lastname) || x.createdBy == id))
+  // return eventObj.splice(page * limit, limit);
+  // }
+}
+
+async function getEventByResearcher(firstname, lastname, page = 0, limit, name, type, id) {
+  let eventObj = await db.EventResearcher.find({ $or: [{ firstname: firstname, lastname: lastname, deletedBy: { $exists: false } }, { createdBy: id, deletedBy: { $exists: false } }] }).populate('event').populate({ path: 'event', populate: { path: 'type' } }).find({});
+  console.log("EEE->", eventObj)
+  eventObj.filter(event => !event.event?.deletedBy)
   if (name) {
     eventObj = eventObj.filter(event => event.event.name.includes(name))
   }
   if (type) {
     eventObj = eventObj.filter(event => event.event.type._id == type)
   }
-  return eventObj;
+  return eventObj.filter(event => event.event != null);
 }
 
 async function updateEventTarget(params, id, editorid) {
@@ -301,9 +364,9 @@ async function deleteEventTarget(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
-async function getEventActivity(id, page=0, limit = 8000) {
+async function getEventActivity(id, page = 0, limit = 8000) {
   if (id == 'all') {
-    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
     return eventObj;
   }
   else {
@@ -312,14 +375,14 @@ async function getEventActivity(id, page=0, limit = 8000) {
   }
 }
 
-async function getEventActivityByEventTargetId(id, page=0, limit = 8000) {
-  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ date: -1 }).limit(parseInt(limit)).skip(limit * page);
+async function getEventActivityByEventTargetId(id, page = 0, limit = 8000) {
+  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
   return eventObj;
 }
 
 async function createEventActivity(params, creatorid) {
-  const { eventtarget, image , image2 , image3 , image4 , image5 , event, detail, budget, startdate, enddate, note } = params;
-  var activity = new db.EventActivity({ eventtarget, image , image2 , image3 , image4 , image5, event, detail, budget, startdate, enddate, note });
+  const { eventtarget, image, image2, image3, image4, image5, event, detail, budget, startdate, enddate, note } = params;
+  var activity = new db.EventActivity({ eventtarget, image, image2, image3, image4, image5, event, detail, budget, startdate, enddate, note });
   activity.createdBy = creatorid;
   await activity.save();
   return activity;
@@ -351,6 +414,56 @@ async function deleteEventActivity(id, deleterid) {
   return { message: 'ลบข้อมูลสำเร็จ' };
 }
 
+async function getEventOtherList(id, page = 0, limit = 8000) {
+  if (id == 'all') {
+    const eventObj = await db.EventOtherList.find({ deletedBy: { $exists: false } }).sort({ created_at: 'desc' }).limit(parseInt(limit)).skip(limit * page);
+    return eventObj;
+  }
+  else {
+    const eventObj = await db.EventOtherList.find({ event: id, deletedBy: { $exists: false } })
+    if (eventObj)
+      return eventObj;
+    else
+      return []
+  }
+}
+
+async function updateEventOtherList(params, eventId, editorid) {
+  // Delete
+  const otherListAllObj = await db.EventOtherList.find({ event: eventId })
+  for (let key of otherListAllObj) {
+    // console.log("Data ->", params.find(x => x._id == key._id))
+    if (params.find(x => x._id == key._id)) {
+      // console.log("keyt --<>", key)
+      await key.save();
+    }
+    else {
+      key.deletedBy = editorid
+      await key.save();
+    }
+  }
+  // Update
+  for (let key of params) {
+    if (key._id != 0) {
+      var otherListObj = await db.EventOtherList.findById({ _id: key._id })
+      otherListObj.list = key.list || otherListObj.list
+      otherListObj.amount = key.amount || otherListObj.amount
+      otherListObj.unit = key.unit || otherListObj.unit
+      otherListObj.costPerAmount = key.costPerAmount || otherListObj.costPerAmount
+      otherListObj.totalCost = key.totalCost || otherListObj.totalCost
+      otherListObj.updatedBy = key.updatedBy || otherListObj.updatedBy
+      await otherListObj.save();
+    }
+    else {
+      var eventOtherList = new db.EventOtherList({ list: key.list, amount: key.amount, unit: key.unit, costPerAmount: key.costPerAmount, totalCost: key.totalCost, createdBy: editorid, event: eventId });
+      // eventOtherList.createdBy = editorid;
+      eventOtherList.save();
+    }
+  }
+
+  return { message: 'แก้ไขข้อมูลสำเร็จ' };
+}
+
 module.exports = {
   getEventType,
   createEventType,
@@ -374,5 +487,9 @@ module.exports = {
   getEventActivityByEventTargetId,
   createEventActivity,
   updateEventActivity,
-  deleteEventActivity
+  deleteEventActivity,
+  getEventOtherList,
+  updateEventOtherList,
+  getPageEvent,
+  getEventReseacherNameandLastName
 }

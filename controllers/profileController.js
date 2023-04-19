@@ -3,7 +3,18 @@ const profileService = require('../services/profileService');
 async function getAllUser(req, res) {
   try {
     const { id, role } = req.auth;
-    const response = await profileService.getAllRoleUsers(id, role)
+    const response = await profileService.getAllRoleUsers(id, role, req.query.page, req.query.limit)
+    res.json(response)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getAllUserPage(req, res) {
+  try {
+    const { id, role } = req.auth;
+    const response = await profileService.getAllRoleUsersPage(id, role, req.query.page, req.query.limit)
     res.json(response)
   } catch (error) {
     console.error(error);
@@ -14,7 +25,18 @@ async function getAllUser(req, res) {
 async function getAllResearcher(req, res) {
   try {
     const { id, role } = req.auth;
-    const response = await profileService.getAllRoleResearcher(id, role)
+    const response = await profileService.getAllRoleResearcher(id, role, req.query.page, req.query.limit)
+    res.json(response)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getAllResearcherPage(req, res) {
+  try {
+    const { id, role } = req.auth;
+    const response = await profileService.getAllRoleResearcherPage(id, role)
     res.json(response)
   } catch (error) {
     console.error(error);
@@ -63,5 +85,7 @@ module.exports = {
   getAllResearcher,
   getUser,
   updateProfile,
-  deleteUser
+  deleteUser,
+  getAllUserPage,
+  getAllResearcherPage
 }

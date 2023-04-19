@@ -1,20 +1,38 @@
 const db = require('../utils/db');
 const bcrypt = require('bcrypt');
 
-async function getAllRoleUsers(finderid, finderRole) {
+async function getAllRoleUsers(finderid, finderRole, page = 0, limit = 8000) {
   if (finderRole !== 'user') {
-    const user = await db.User.find({ role: "user", deletedBy: { $exists: false } }).populate('deletedBy');
+    const user = await db.User.find({ role: "user", deletedBy: { $exists: false } }).sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
     const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
     return user;
   }
   return;
 }
 
-async function getAllRoleResearcher(finderid, finderRole) {
+async function getAllRoleUsersPage(finderid, finderRole) {
+  if (finderRole !== 'user') {
+    const user = await db.User.find({ role: "user", deletedBy: { $exists: false } })
+    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+    return user.length;
+  }
+  return;
+}
+
+async function getAllRoleResearcher(finderid, finderRole, page = 0, limit = 8000) {
   if (finderRole === 'admin') {
-    const user = await db.User.find({ role: "researcher", deletedBy: { $exists: false } }).populate('deletedBy');
+    const user = await db.User.find({ role: "researcher", deletedBy: { $exists: false } }).sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
     const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
     return user;
+  }
+  return;
+}
+
+async function getAllRoleResearcherPage(finderid, finderRole) {
+  if (finderRole === 'admin') {
+    const user = await db.User.find({ role: "researcher", deletedBy: { $exists: false } })
+    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+    return user.length;
   }
   return;
 }
@@ -76,5 +94,7 @@ module.exports = {
   getAllRoleResearcher,
   getUser,
   updateProfile,
-  deleteUser
+  deleteUser,
+  getAllRoleUsersPage,
+  getAllRoleResearcherPage
 }

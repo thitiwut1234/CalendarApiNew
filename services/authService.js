@@ -87,17 +87,17 @@ async function createUser(params, creator) {
 
   if (role == 'admin' || role == 'researcher') {
     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
-    const user = await db.User.findOne({ email });
+    const user = await db.User.findOne({ email, deletedBy: { $exists: false } });
     if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
-    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, position, affiliation, agency, tel , rank });
+    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, position, affiliation, agency, tel, rank });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }
   else {
     if (!idnumber) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
-    const user = await db.User.findOne({ idnumber });
+    const user = await db.User.findOne({ idnumber, deletedBy: { $exists: false } });
     if (user) return { status: 1, message: 'หมายเลขบัตรประจำตัวประชาชนถูกใช้แล้ว' };
-    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id , tel , lat , long });
+    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, tel, lat, long });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }
@@ -125,7 +125,7 @@ async function createAdmin(params, creator) {
     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
     const user = await db.User.findOne({ email });
     if (user) return { status: 1, message: 'อีเมล์ถูกใช้แล้ว' };
-    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: null});
+    const newUser = new db.User({ email, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: null });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }
