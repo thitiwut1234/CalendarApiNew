@@ -316,14 +316,14 @@ async function getTargetById(id, page = 0, limit = 8000) {
 
 async function getEventByUserId(id, page = 0, limit = 8000, name, type) {
   if (type != 0) {
-    let eventObj = await db.Event.find({ type: type, name: { '$regex': name }, deletedBy: { $exists: false } }).populate({ path: 'target type', select: { user: 1 } })
+    let eventObj = await db.Event.find({ type: type, name: { '$regex': name }, deletedBy: { $exists: false } }).populate({ path: 'target type', select: { user: 1, name: 1, colorEvent: 1, color:1 } })
       .sort({ created_at: -1 })
     // .limit(parseInt(limit)).skip(limit * page);
     eventObj = eventObj.filter(x => x.target.find(uid => uid.user == id))
     return eventObj.splice(page * limit, limit);
   }
   else {
-    let eventObj = await db.Event.find({ name: { '$regex': name }, deletedBy: { $exists: false } }).populate({ path: 'target', select: { user: 1 } })
+    let eventObj = await db.Event.find({ name: { '$regex': name }, deletedBy: { $exists: false } }).populate({ path: 'target type', select: { user: 1, name: 1, colorEvent: 1, color:1 } })
       .sort({ created_at: -1 })
     // .limit(parseInt(limit)).skip(limit * page);
     eventObj = eventObj.filter(x => x.target.find(uid => uid.user == id))
