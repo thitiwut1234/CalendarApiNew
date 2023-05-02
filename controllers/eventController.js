@@ -10,6 +10,27 @@ async function getEventType(req, res) {
   }
 }
 
+async function getEventTypePage(req, res) {
+  try {
+    const response = await eventService.getEventTypePage(req.params.id, req.query.page, req.query.limit);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+
+async function getEventTypeTotal(req, res) {
+  try {
+    const response = await eventService.getEventTypeTotal(req.params.id, req.query.page, req.query.limit);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
 async function createEventType(req, res) {
   try {
     const response = await eventService.createEventType(req.body, req.auth.id);
@@ -164,7 +185,7 @@ async function getEventtByTargetId(req, res) {
 
 async function getEventtByNameandLastName(req, res) {
   try {
-    const response = await eventService.getEventReseacherNameandLastName(req.body.firstname, req.body.lastname, req.query.page, req.query.limit , req.params.id);
+    const response = await eventService.getEventReseacherNameandLastName(req.body.firstname, req.body.lastname, req.query.page, req.query.limit, req.params.id);
     res.json(response);
   } catch (error) {
     console.error(error);
@@ -213,6 +234,16 @@ async function getEventActivity(req, res) {
   }
 }
 
+async function getEventActivityTotal(req, res) {
+  try {
+    const response = await eventService.getEventActivityTotal(req.params.id, req.query.page, req.query.limit);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
 async function getEventOtherList(req, res) {
   try {
     const response = await eventService.getEventOtherList(req.params.id, req.query.page, req.query.limit);
@@ -226,6 +257,16 @@ async function getEventOtherList(req, res) {
 async function getEventActivityByTargetId(req, res) {
   try {
     const response = await eventService.getEventActivityByEventTargetId(req.params.id, req.query.page, req.query.limit);
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getEventActivityTotalByTargetId(req, res) {
+  try {
+    const response = await eventService.getEventActivityTotalByEventTargetId(req.params.id);
     res.json(response);
   } catch (error) {
     console.error(error);
@@ -276,6 +317,8 @@ async function updateEventOtherList(req, res) {
 
 module.exports = {
   getEventType,
+  getEventTypePage,
+  getEventTypeTotal,
   createEventType,
   updateEventType,
   deleteEventType,
@@ -294,7 +337,9 @@ module.exports = {
   updateEventTarget,
   deleteEventTarget,
   getEventActivity,
+  getEventActivityTotal,
   getEventActivityByTargetId,
+  getEventActivityTotalByTargetId,
   createEventActivity,
   updateEventActivity,
   deleteEventActivity,

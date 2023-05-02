@@ -18,6 +18,30 @@ async function getEventType(id, page = 0, limit = 8000) {
   }
 }
 
+async function getEventTypePage(id, page = 0, limit = 8000) {
+  // const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+  const eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type')
+  let obj = []
+  for (let i = 0; i < eventObj.length; i++) {
+    if (!(obj.find(x => x._id == eventObj[i].type._id))) {
+      obj.push(eventObj[i].type)
+    }
+  }
+  return obj.splice(page * limit, limit);
+}
+
+async function getEventTypeTotal(id, page = 0, limit = 8000) {
+  // const eventObj = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+  const eventObj = await db.Event.find({ deletedBy: { $exists: false } }).populate('type')
+  let obj = []
+  for (let i = 0; i < eventObj.length; i++) {
+    if (!(obj.find(x => x._id == eventObj[i].type._id))) {
+      obj.push(eventObj[i].type)
+    }
+  }
+  return obj.length;
+}
+
 async function createEventType(params, creatorid) {
   const { name, startdate, enddate, colorEvent, color, padding } = params;
   var newEventType = new db.EventType({ name, startdate, enddate, colorEvent, color, padding });
@@ -366,7 +390,7 @@ async function deleteEventTarget(id, deleterid) {
 
 async function getEventActivity(id, page = 0, limit = 8000) {
   if (id == 'all') {
-    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: 'asc' }).limit(parseInt(limit)).skip(limit * page);
     return eventObj;
   }
   else {
@@ -375,9 +399,25 @@ async function getEventActivity(id, page = 0, limit = 8000) {
   }
 }
 
+async function getEventActivityTotal(id, page = 0, limit = 8000) {
+  if (id == 'all') {
+    const eventObj = await db.EventActivity.find({ deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: 'asc' }).limit(parseInt(limit)).skip(limit * page);
+    return eventObj.length;
+  }
+  else {
+    const eventObj = await db.EventActivity.findOne({ _id: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5');
+    return eventObj.length;
+  }
+}
+
 async function getEventActivityByEventTargetId(id, page = 0, limit = 8000) {
-  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } }).populate('eventtarget image image2 image3 image4 image5').sort({ created_at: 'desc' }).limit(parseInt(limit)).skip(limit * page);
   return eventObj;
+}
+
+async function getEventActivityTotalByEventTargetId(id, page = 0, limit = 8000) {
+  const eventObj = await db.EventActivity.find({ eventtarget: id, deletedBy: { $exists: false } });
+  return eventObj.length;
 }
 
 async function createEventActivity(params, creatorid) {
@@ -466,6 +506,8 @@ async function updateEventOtherList(params, eventId, editorid) {
 
 module.exports = {
   getEventType,
+  getEventTypePage,
+  getEventTypeTotal,
   createEventType,
   updateEventType,
   deleteEventType,
@@ -484,7 +526,9 @@ module.exports = {
   updateEventTarget,
   deleteEventTarget,
   getEventActivity,
+  getEventActivityTotal,
   getEventActivityByEventTargetId,
+  getEventActivityTotalByEventTargetId,
   createEventActivity,
   updateEventActivity,
   deleteEventActivity,

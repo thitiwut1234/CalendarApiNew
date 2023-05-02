@@ -37,6 +37,26 @@ async function getAllRoleResearcherPage(finderid, finderRole) {
   return;
 }
 
+async function getAllRoleAdmin(finderid, finderRole, page = 0, limit = 8000) {
+  if (finderRole === 'admin') {
+    const user = await db.User.find({ role: "admin", deletedBy: { $exists: false } }).sort({ created_at: -1 }).limit(parseInt(limit)).skip(limit * page);
+    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+    return user;
+  }
+  return;
+}
+
+async function getAllRoleAdminPage(finderid, finderRole) {
+  if (finderRole === 'admin') {
+    const user = await db.User.find({ role: "admin", deletedBy: { $exists: false } })
+    const { _id, idnumber, email, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, rank, createdBy, created_at, updatedBy, updated_at, deletedBy } = user;
+    return user.length;
+  }
+  return;
+}
+
+
+
 async function getUser(userid, finderid, finderRole) {
   if (finderRole !== 'admin' && finderRole !== 'researcher')
     if (finderid !== userid) return;
@@ -60,6 +80,7 @@ async function updateProfile(params, userid, updaterid, updaterRole) {
       user.idnumber = params.idnumber || user.idnumber;
       user.role = params.role || user.role;
     }
+    console.log("Pasword ",(params.password))
     user.password = (params.password && await bcrypt.hash(params.password, 10)) || user.password;
     user.firstname = params.firstname || user.firstname;
     user.lastname = params.lastname || user.lastname;
@@ -92,9 +113,11 @@ async function deleteUser(userid, deleterid) {
 module.exports = {
   getAllRoleUsers,
   getAllRoleResearcher,
+  getAllRoleAdmin,
   getUser,
   updateProfile,
   deleteUser,
   getAllRoleUsersPage,
-  getAllRoleResearcherPage
+  getAllRoleResearcherPage,
+  getAllRoleAdminPage
 }

@@ -44,6 +44,28 @@ async function getAllResearcherPage(req, res) {
   }
 }
 
+async function getAllAdmin(req, res) {
+  try {
+    const { id, role } = req.auth;
+    const response = await profileService.getAllRoleAdmin(id, role, req.query.page, req.query.limit)
+    res.json(response)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
+async function getAllAdminPage(req, res) {
+  try {
+    const { id, role } = req.auth;
+    const response = await profileService.getAllRoleAdminPage(id, role)
+    res.json(response)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด' });
+  }
+}
+
 async function getUser(req, res) {
   try {
     const { userid } = req.params;
@@ -83,9 +105,11 @@ async function deleteUser(req, res) {
 module.exports = {
   getAllUser,
   getAllResearcher,
+  getAllAdmin,
   getUser,
   updateProfile,
   deleteUser,
   getAllUserPage,
-  getAllResearcherPage
+  getAllResearcherPage,
+  getAllAdminPage
 }

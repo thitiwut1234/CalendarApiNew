@@ -1,6 +1,97 @@
 const db = require('../utils/db');
 
 async function getReport(query) {
+  // return new Promise(async (resolve, reject) => {
+  //   try {
+  //     var types = await db.EventType.find({ deletedBy: { $exists: false } }).sort({ created_at: 'asc' }).limit(parseInt(query.limit)).skip(query.limit * query.page)
+  //     types.forEach(async (type, index) => {
+  //       var events = await db.Event.find({ type: type._id, deletedBy: { $exists: false } })
+  //       types[index].data = events
+  //       console.log(index, events)
+  //     })
+
+  //     setTimeout(() => {
+  //       resolve(types)
+  //     }, [1500])
+
+  //   }
+  //   catch (err) {
+  //     reject(ErrorNotFound('Data not found'))
+  //   }
+  // })
+  var report = await db.Event.find({ deletedBy: { $exists: false } }).populate('type target')
+  console.log("Report", report)
+  if (query.type && query.type != 'all') report = report.filter(x => x.type._id == query.type);
+  if (query.province) report = report.filter(x => x.province == query.province);
+  if (query.district) report = report.filter(x => x.district == query.district);
+  if (query.subdistrict) report = report.filter(x => x.subdistrict == query.subdistrict);
+  if (query.startdate && query.enddate)
+    report = report.filter(x => x.startdate >= new Date(query.startdate) && x.startdate <= new Date(query.enddate))
+
+  var newReport = [];
+  report.forEach((x) => {
+    var netprofit = 0;
+    var avgAD = 0;
+    var count = 0;
+    var maxactualdate = 0;
+    var sumactualamount = 0;
+    var sumreceivedbudget = 0
+    var countTarget = 0;
+    x.target.forEach((y) => {
+      count++;
+      var aa = y.actualamount;
+      var ai = y.actualincome;
+      var ad = y.actualdate;
+      sumreceivedbudget += y.receivedbudget
+      sumactualamount += aa
+      if (ai && aa)
+        netprofit += (aa * ai);
+      if (ad) {
+        avgAD += ad;
+        if (ad > maxactualdate) {
+          maxactualdate = ad;
+        }
+      }
+    });
+    newReport.push({
+      _id: x._id,
+      name: x.name,
+      type: x.type.name,
+      quantity: x.quantity,
+      expectquantity: x.expectquantity,
+      startdate: x.startdate,
+      enddate: x.enddate,
+      expectdate: x.expectdate,
+      province: x.province,
+      district: x.district,
+      subdistrict: x.subdistrict,
+      netprofit: netprofit,
+      maxactualdate: maxactualdate,
+      averageactualdate: avgAD / count,
+      sumactualamount: sumactualamount,
+      receivedbudget: x.receivedbudget,
+      sumreceivedbudget: x.budget == null ? 0 : x.budget,
+      target: x.target.length
+    });
+  })
+
+  var groups = [];
+
+  newReport.reduce((arr, item) => {
+    let group = groups.find(x => x.type == item.type);
+    if (group) {
+      group.event.push(item);
+      group.event.sumreceivedbudget += item.receivedbudget
+      group.event.sumnetprofit += item.netprofit;
+    }
+    else {
+      groups.push({ type: item.type, sumnetprofit: item.netprofit, event: [item] });
+    }
+  }, {});
+  return groups.splice(query.page * query.limit, query.limit);
+}
+
+async function getReportTotal(query) {
   var report = await db.Event.find({ deletedBy: { $exists: false } }).populate('type target');
   if (query.type && query.type != 'all') report = report.filter(x => x.type._id == query.type);
   if (query.province) report = report.filter(x => x.province == query.province);
@@ -50,7 +141,7 @@ async function getReport(query) {
       maxactualdate: maxactualdate,
       averageactualdate: avgAD / count,
       sumactualamount: sumactualamount,
-      receivedbudget: x.receivedbudget ,
+      receivedbudget: x.receivedbudget,
       sumreceivedbudget: x.budget == null ? 0 : x.budget,
       target: x.target.length
     });
@@ -66,10 +157,10 @@ async function getReport(query) {
       group.event.sumnetprofit += item.netprofit;
     }
     else {
-      groups.push({ type: item.type  , sumnetprofit: item.netprofit, event: [item] });
+      groups.push({ type: item.type, sumnetprofit: item.netprofit, event: [item] });
     }
   }, {});
-  return groups;
+  return groups.length;
 }
 
 // async function getReportTarget(id) {
@@ -113,7 +204,7 @@ async function getReportTarget(id) {
           sumbudget += activity.budget
         })
         sumreceivedbudget += report.receivedbudget
-        groups.push({netbudget:report.netbudget , report : report})
+        groups.push({ netbudget: report.netbudget, report: report })
       })
       setTimeout(() => {
         resolve({ sumreceivedbudget, sumbudget, groups })
@@ -155,5 +246,6 @@ async function getReportTarget(id) {
 
 module.exports = {
   getReport,
+  getReportTotal,
   getReportTarget
 }

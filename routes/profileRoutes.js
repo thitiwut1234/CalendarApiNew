@@ -13,6 +13,8 @@ router.post('/role/user', authorizer(), profileController.getAllUser)
 router.post('/role/userTotal', authorizer(), profileController.getAllUserPage)
 router.post('/role/researcher', authorizer(['admin']), profileController.getAllResearcher)
 router.post('/role/researcherTotal', authorizer(['admin']), profileController.getAllResearcherPage)
+router.post('/role/admin', authorizer(['admin']), profileController.getAllAdmin)
+router.post('/role/adminTotal', authorizer(['admin']), profileController.getAllAdminPage)
 router.get('/:userid', authorizer(), profileController.getUser);
 router.put('/update/:userid', authorizer(), updateProfileSchema, profileController.updateProfile);
 router.delete('/delete/:userid', authorizer(['admin']), profileController.deleteUser);

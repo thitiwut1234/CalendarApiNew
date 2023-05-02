@@ -9,6 +9,8 @@ const router = express.Router();
 module.exports = router;
 
 router.get('/type/:id', authorizer(), eventController.getEventType);
+router.get('/typePage', authorizer(), eventController.getEventTypePage);
+router.get('/typeTotal', authorizer(), eventController.getEventTypeTotal);
 router.post('/type/create', authorizer(['admin']), eventTypeSchema, eventController.createEventType);
 router.put('/type/update/:id', authorizer(['admin']), eventTypeSchema, eventController.updateEventType);
 router.delete('/type/delete/:id', authorizer(['admin']), eventController.deleteEventType);
@@ -34,7 +36,9 @@ router.put('/target/update/:id', authorizer(), eventTargetSchema, eventControlle
 router.delete('/target/delete/:id', authorizer(), eventController.deleteEventTarget);
 
 router.get('/activity/:id', authorizer(), eventController.getEventActivity);
+router.get('/activityTotal/:id', authorizer(), eventController.getEventActivityTotal);
 router.get('/activity/target/:id', authorizer(), eventController.getEventActivityByTargetId);
+router.get('/activity/targetTotal/:id', authorizer(), eventController.getEventActivityTotalByTargetId);
 router.post('/activity/findTargetId', authorizer(), eventTargetIdSchema, eventController.getTargetIdByUserIdandEventId);
 router.post('/activity/create', authorizer(), eventActivitySchema, eventController.createEventActivity);
 router.put('/activity/update/:id', authorizer(), eventActivitySchema, eventController.updateEventActivity);

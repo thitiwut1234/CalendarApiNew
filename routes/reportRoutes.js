@@ -9,4 +9,5 @@ const router = express.Router();
 module.exports = router;
 
 router.get('/', authorizer(), reportController.getReport);
+router.get('/total', authorizer(), reportController.getReportTotal);
 router.get('/:id', authorizer(), reportController.getReportTarget);
