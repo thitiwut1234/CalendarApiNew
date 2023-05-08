@@ -88,7 +88,17 @@ async function getReport(query) {
       groups.push({ type: item.type, sumnetprofit: item.netprofit, event: [item] });
     }
   }, {});
-  return groups.splice(query.page * query.limit, query.limit);
+  // return groups.splice(query.page * query.limit, query.limit);
+  if (query.page == -1) {
+    return groups
+  }
+  else if (query.type) {
+    groups[0].event = groups[0].event.splice(query.page * query.limit, query.limit);
+    return groups
+  }
+  else {
+    return groups.splice(query.page * query.limit, query.limit);
+  }
 }
 
 async function getReportTotal(query) {
@@ -160,7 +170,12 @@ async function getReportTotal(query) {
       groups.push({ type: item.type, sumnetprofit: item.netprofit, event: [item] });
     }
   }, {});
-  return groups.length;
+  if (query.type) {
+    return groups[0].event.length;
+  }
+  else {
+    return groups.length;
+  }
 }
 
 // async function getReportTarget(id) {
@@ -196,6 +211,7 @@ async function getReportTarget(id) {
       sumbudget = 0
       sumreceivedbudget = 0
       let groups = []
+      console.log("Report", reports)
       reports.forEach(async report => {
         let activitys = await db.EventActivity.find({ eventtarget: report._id, deletedBy: { $exists: false } })
         report.netbudget = 0

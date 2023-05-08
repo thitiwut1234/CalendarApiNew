@@ -84,7 +84,7 @@ async function createUser(params, creator) {
   const lat = params.lat;
   const long = params.long;
   const rank = params.rank;
-
+  console.log("Rank" , rank)
   if (role == 'admin' || role == 'researcher') {
     if (!email) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
     const user = await db.User.findOne({ email, deletedBy: { $exists: false } });
@@ -97,7 +97,7 @@ async function createUser(params, creator) {
     if (!idnumber) return { status: 3, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' };
     const user = await db.User.findOne({ idnumber, deletedBy: { $exists: false } });
     if (user) return { status: 1, message: 'หมายเลขบัตรประจำตัวประชาชนถูกใช้แล้ว' };
-    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, tel, lat, long });
+    const newUser = new db.User({ idnumber, password, firstname, lastname, birthdate, address, province, district, subdistrict, zipcode, role, createdBy: creator.id, tel, lat, long , rank });
     await newUser.save();
     return { status: 0, message: 'ลงทะเบียนเสร็จสิ้น' };
   }
